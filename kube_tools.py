@@ -35,8 +35,8 @@ DEFAULT_CONF = {
         'kcp': "kubectl cp $src_path ${namespace}/${podname}:${dest_path}",
         'kexec': "kubectl exec -t $podname -c system-test -- $command",
         'login_and_cd': "/bin/bash && sudo su hrt_qa && source /etc/profile && cd $test_dir && $test_command",
-        'pytest': "python2.7 -m pytest -s $test_file_path --output=artificats_${test_name} | "
-                  "tee /tmp/console_${test_name}.log 2>&1"
+        'pytest': "python2.7 -m pytest -s $test_file_path --output=artificats_${test_name} 2>&1 | "
+                  "tee /tmp/console_${test_name}.log"
     }
 }
 
@@ -129,7 +129,7 @@ class KubectlTools:
 
     @staticmethod
     def __run_command(command):
-        if os.system(command) == 0 and time.sleep(1):
+        if os.system(command) == 0:
             logger.info("Command Ran Successfully")
             return True
         else:
@@ -173,4 +173,5 @@ if __name__ == '__main__':
     if kube_tool.kubectl_copy_to_container():
         kube_tool.kubectl_run_test_on_container()
     else:
+        time.sleep(1)
         logger.warn("Skipping KubeTool Run Test as Copy failed")
