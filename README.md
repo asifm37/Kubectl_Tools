@@ -5,7 +5,7 @@ Also you can run the pytest command on Container directly from IDE.
 ## How to setup Kubectl Tools in IDE
 Refer Pycharm's [Create/Edit/Copy Tool Dialog!](https://www.jetbrains.com/help/pycharm/settings-tools-create-edit-copy-tool-dialog.html)
 
-####Steps to Create External Tools:
+#### Steps to Create External Tools:
 * In Pycharm IDE, Go to Preferences (⌘,)
 * Go to `External Tools` under **Tools** Section
 * Click on `+` icon to create a new Tool
@@ -25,7 +25,7 @@ Refer Pycharm's [Create/Edit/Copy Tool Dialog!](https://www.jetbrains.com/help/p
 * Right Click, Go to `External Tools` and Select your `Kubectl Tool`
 * That's all! Keep an eye on the Console/Run Tab :)
 
-####Notes:
+#### Notes:
 * When you for the first time or when you want to change the Pod Name,
 Go to `ktoolrc.ini` file at `$ProjectFileDir$` and add/change the value for `podname` field.
 * This is one time task per Pod Name change.
