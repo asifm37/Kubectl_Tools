@@ -29,3 +29,4 @@ Refer Pycharm's [Create/Edit/Copy Tool Dialog!](https://www.jetbrains.com/help/p
 * When you for the first time or when you want to change the Pod Name,
 Go to `ktoolrc.ini` file at `$ProjectFileDir$` and add/change the value for `podname` field.
 * This is one time task per Pod Name change.
+* Add `ktoolrc.ini` to your projects `.gitignore` file if required
