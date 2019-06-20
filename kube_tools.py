@@ -33,7 +33,7 @@ DEFAULT_CONF = {
     },
     'command': {
         'kcp': "kubectl cp $src_path ${namespace}/${podname}:${dest_path}",
-        'kexec': "kubectl exec -t $podname -c system-test -- $command",
+        'kexec': "kubectl exec -t $podname -n $namespace -c system-test -- $command",
         'login_and_cd': "sudo su - hrt_qa -c \"source /etc/profile && cd $test_dir && $test_command\" ",
         'pytest': "python2.7 -m pytest -s $test_file_path --output=artificats_${test_name} 2>&1 | "
                   "tee /tmp/console_${test_name}.log"
@@ -158,6 +158,7 @@ class KubectlTools:
 
     def kubectl_run_test_on_container(self):
         st_podname = self.cur_config.get('container', 'podname')
+        namespace = self.cur_config.get('container', 'namespace')
         test_dir = self.cur_config.get('mapping', 'dst_test_dir')
         relative_path = os.path.relpath(self.dest_path, test_dir)
         test_name = os.path.basename(self.dest_path).split('.')[0] + '_' + str(int(time.time()))
@@ -166,7 +167,9 @@ class KubectlTools:
                                                                                    test_name=test_name)
         cmd = Template(self.cur_config.get('command', 'login_and_cd')).substitute(test_dir=test_dir,
                                                                                   test_command=pytest_cmd)
-        kexec_cmd = Template(self.cur_config.get('command', 'kexec')) .substitute(podname=st_podname, command=cmd)
+        kexec_cmd = Template(self.cur_config.get('command', 'kexec')) .substitute(podname=st_podname,
+                                                                                  namespace=namespace,
+                                                                                  command=cmd)
 
         logger.info("[Running] cmd = %s", kexec_cmd)
         return self.__run_command(kexec_cmd)
