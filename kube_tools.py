@@ -34,7 +34,7 @@ DEFAULT_CONF = {
     'command': {
         'kcp': "kubectl cp $src_path ${namespace}/${podname}:${dest_path}",
         'kexec': "kubectl exec -t $podname -c system-test -- $command",
-        'login_and_cd': "/bin/bash && sudo su hrt_qa && source /etc/profile && cd $test_dir && $test_command",
+        'login_and_cd': "sudo su - hrt_qa -c \"source /etc/profile && cd $test_dir && $test_command\" ",
         'pytest': "python2.7 -m pytest -s $test_file_path --output=artificats_${test_name} 2>&1 | "
                   "tee /tmp/console_${test_name}.log"
     }
@@ -142,9 +142,13 @@ class KubectlTools:
             st_podname = self.cur_config.get('container', 'podname')
             namespace = self.cur_config.get('container', 'namespace')
 
+            dest_path = self.dest_path
+            if os.path.isdir(self.file_path):
+                dest_path = os.path.dirname(self.dest_path)
+
             cmd_template = Template(self.cur_config.get('command', 'kcp'))
             kcp_commad = cmd_template.substitute(src_path=self.file_path, namespace=namespace,
-                                                 podname=st_podname, dest_path=self.dest_path)
+                                                 podname=st_podname, dest_path=dest_path)
 
             logger.info("[Running] cmd = %s", kcp_commad)
             return self.__run_command(kcp_commad)

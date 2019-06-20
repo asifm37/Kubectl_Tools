@@ -26,7 +26,10 @@ Refer Pycharm's [Create/Edit/Copy Tool Dialog!](https://www.jetbrains.com/help/p
 * That's all! Keep an eye on the Console/Run Tab :)
 
 #### Notes:
-* When you for the first time or when you want to change the Pod Name,
+* When you are running the tool for the first time or when you want to change the Pod Name,
 Go to `ktoolrc.ini` file at `$ProjectFileDir$` and add/change the value for `podname` field.
 * This is one time task per Pod Name change.
-* Add `ktoolrc.ini` to your projects `.gitignore` file if required
+* Delete the `ktoolrc.ini` file from your `$ProjectFileDir$`,
+if you make any code changes in this repository as all the constants
+are picked up by the `ini` file.
+* Add `ktoolrc.ini` to your projects `.gitignore` file if required.
