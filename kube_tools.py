@@ -35,7 +35,7 @@ DEFAULT_CONF = {
         'kcp': "kubectl cp $src_path ${namespace}/${podname}:${dest_path}",
         'kexec': "kubectl exec -t $podname -n $namespace -c system-test -- $command",
         'login_and_cd': "sudo su - hrt_qa -c \"source /etc/profile && cd $test_dir && $test_command\" ",
-        'pytest': "python2.7 -m pytest -s $test_file_path --output=artificats_${test_name} 2>&1 | "
+        'pytest': "python2.7 -m pytest -s $test_file_path --output=artifacts_${test_name} 2>&1 | "
                   "tee /tmp/console_${test_name}.log"
     }
 }
