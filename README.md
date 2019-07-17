@@ -1,6 +1,9 @@
 # Kubectl_Tools
 External Tool to use in IDE (say Pycharm) to Copy Current Test File/Folder to Kubernetes container.
-Also you can run the pytest command on Container directly from IDE.
+Also you can run:
+* pytest command on Container directly from IDE.
+* Run system-test using /ansible/system_test.yml file
+* Run any ansible-plybook on container (Eg. ansible-playbook se-setup.yml)
 
 ## How to setup Kubectl Tools in IDE
 Refer Pycharm's [Create/Edit/Copy Tool Dialog!](https://www.jetbrains.com/help/pycharm/settings-tools-create-edit-copy-tool-dialog.html)
