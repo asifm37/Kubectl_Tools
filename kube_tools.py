@@ -29,14 +29,18 @@ DEFAULT_CONF = {
     },
     'mapping': {
         'dst_package_dir': '/usr/local/lib/python2.7/dist-packages',
-        'dst_test_dir': '/hwqe/hadoopqe'
+        'dst_test_dir': '/hwqe/hadoopqe',
+        'dst_yaml_dir': '/ansible'
     },
     'command': {
         'kcp': "kubectl cp $src_path ${namespace}/${podname}:${dest_path}",
         'kexec': "kubectl exec -t $podname -n $namespace -c system-test -- $command",
-        'login_and_cd': "sudo su - hrt_qa -c \"source /etc/profile && cd $test_dir && $test_command\" ",
-        'pytest': "python2.7 -m pytest -s $test_file_path --output=artifacts_${test_name} 2>&1 | "
-                  "tee /tmp/console_${test_name}.log"
+        'sudo_login_and_run': "sudo su - hrt_qa -c \"$run_command\" ",
+        'login_and_run': "su -c \"$run_command\" ",
+        'texas_entry': "pkill supervisord && texas_test_entrypoint --test-type system_test --run-tests-path /ansible/system_test.yml",
+        'ansible_play': "ansible-playbook $yaml_file",
+        'cd_and_run': "source /etc/profile && cd $test_dir && $test_command",
+        'pytest': "python2.7 -m pytest -s $test_file_path --output=artifacts_${test_name} 2>&1 | tee /tmp/console_${test_name}.log"
     }
 }
 
@@ -101,10 +105,14 @@ class KubectlTools:
             exit(1)
 
     def __map_src_to_dest_path(self):
-        self.dest_path = self.cur_config.get(
-            section='mapping',
-            option='dst_package_dir' if self.project_name in ['beaver-qe', 'beaver-common'] else 'dst_test_dir'
-        ) + self.file_path.split(self.project_name)[1]
+        if self.file_path.endswith(('.yaml', '.yml')):
+            self.dest_path = os.path.join(self.cur_config.get(section='mapping', option='dst_yaml_dir'),
+                                          os.path.basename(self.file_path))
+        else:
+            self.dest_path = self.cur_config.get(
+                section='mapping',
+                option='dst_package_dir' if self.project_name in ['beaver-qe', 'beaver-common'] else 'dst_test_dir'
+            ) + self.file_path.split(self.project_name)[1]
 
     # Helper Functions
     def __write_conf_to_file(self):
@@ -159,17 +167,27 @@ class KubectlTools:
     def kubectl_run_test_on_container(self):
         st_podname = self.cur_config.get('container', 'podname')
         namespace = self.cur_config.get('container', 'namespace')
-        test_dir = self.cur_config.get('mapping', 'dst_test_dir')
-        relative_path = os.path.relpath(self.dest_path, test_dir)
-        test_name = os.path.basename(self.dest_path).split('.')[0] + '_' + str(int(time.time()))
 
-        pytest_cmd = Template(self.cur_config.get('command', 'pytest')).substitute(test_file_path=relative_path,
-                                                                                   test_name=test_name)
-        cmd = Template(self.cur_config.get('command', 'login_and_cd')).substitute(test_dir=test_dir,
-                                                                                  test_command=pytest_cmd)
-        kexec_cmd = Template(self.cur_config.get('command', 'kexec')) .substitute(podname=st_podname,
-                                                                                  namespace=namespace,
-                                                                                  command=cmd)
+        if self.file_path.endswith(('.yaml', '.yml')):
+            if os.path.basename(self.file_path) == 'system_test.yml':
+                cmd = self.cur_config.get('command', 'texas_entry')
+            else:
+                cmd = Template(self.cur_config.get('command', 'ansible_play')).substitute(yaml_file=self.dest_path)
+            login_run_cmd = Template(self.cur_config.get('command', 'login_and_run')).substitute(run_command=cmd)
+        else:
+            # Assuming Pytest Run on File or Folder
+            test_dir = self.cur_config.get('mapping', 'dst_test_dir')
+            relative_path = os.path.relpath(self.dest_path, test_dir)
+            test_name = os.path.basename(self.dest_path).split('.')[0] + '_' + str(int(time.time()))
+
+            pytest_cmd = Template(self.cur_config.get('command', 'pytest')).substitute(test_file_path=relative_path,
+                                                                                       test_name=test_name)
+            cmd = Template(self.cur_config.get('command', 'cd_and_run')).substitute(test_dir=test_dir,
+                                                                                    test_command=pytest_cmd)
+            login_run_cmd = Template(self.cur_config.get('command', 'sudo_login_and_run')).substitute(run_command=cmd)
+        kexec_cmd = Template(self.cur_config.get('command', 'kexec')).substitute(podname=st_podname,
+                                                                                 namespace=namespace,
+                                                                                 command=login_run_cmd)
 
         logger.info("[Running] cmd = %s", kexec_cmd)
         return self.__run_command(kexec_cmd)
