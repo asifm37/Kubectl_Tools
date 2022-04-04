@@ -9,6 +9,7 @@ Also you can run:
 Refer Pycharm's [Create/Edit/Copy Tool Dialog!](https://www.jetbrains.com/help/pycharm/settings-tools-create-edit-copy-tool-dialog.html)
 
 #### Steps to Create External Tools:
+* Clone this Repository in your local machine.
 * In Pycharm IDE, Go to Preferences (⌘,)
 * Go to `External Tools` under **Tools** Section
 * Click on `+` icon to create a new Tool
