@@ -1,13 +1,16 @@
-#!/usr/local/bin/python2.7
-import ConfigParser
+
+#!/usr/bin/python3
+
 import os
 import sys
 import logging
 import time
 
-# These are the sequences need to get colored ouput
+from configparser import ConfigParser
 from string import Template
 
+
+# These are the sequences need to get colored output
 RESET_SEQ = "\033[0m"
 RED_COLOR_SEQ = "\033[0;31m"
 YELLOW_COLOR_SEQ = "\033[0;33m"
@@ -16,8 +19,7 @@ GREEN_COLOR_SEQ = "\033[0;32m"
 logging.addLevelName(logging.INFO, GREEN_COLOR_SEQ + logging.getLevelName(logging.INFO))
 logging.addLevelName(logging.WARNING, YELLOW_COLOR_SEQ + logging.getLevelName(logging.WARNING))
 logging.addLevelName(logging.ERROR, RED_COLOR_SEQ + logging.getLevelName(logging.ERROR))
-logging.basicConfig(stream=sys.stdout, level=logging.INFO,
-                    format='%(levelname)-1s: %(message)s' + RESET_SEQ)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(levelname)-1s: %(message)s' + RESET_SEQ)
 
 logger = logging.getLogger()
 
@@ -37,10 +39,19 @@ DEFAULT_CONF = {
         'kexec': "/usr/local/bin/kubectl exec -t $podname -n $namespace -c system-test -- $command",
         'sudo_login_and_run': "sudo su - hrt_qa -c \"$run_command\" ",
         'login_and_run': "su -c \"$run_command\" ",
+<<<<<<< HEAD
         'texas_entry': "pkill supervisord && texas_test_entrypoint --test-type system_test --run-tests-path /ansible/system_test.yml",
         'ansible_play': "ansible-playbook $yaml_file -vvvv",
         'cd_and_run': "source /etc/profile && cd $test_dir && $test_command",
         'pytest': "python2.7 -m pytest -s $test_file_path --output=${test_name} --junitxml=${test_name}_junit.xml 2>&1 | tee /tmp/console_${test_name}.log"
+=======
+        'texas_entry': "pkill supervisord && texas_test_entrypoint --test-type system_test"
+                       " --run-tests-path /ansible/system_test.yml",
+        'ansible_play': "ansible-playbook $yaml_file",
+        'cd_and_run': "source /etc/profile && cd $test_dir && $test_command",
+        'pytest': "python3 -m pytest -s $test_file_path --output=artifacts_${test_name} 2>&1"
+                  " | tee /tmp/console_${test_name}.log"
+>>>>>>> bb720cc (Upgrading to Python3 and Update README file)
     }
 }
 
@@ -50,7 +61,7 @@ class KubectlTools:
         self.file_path = None
         self.project_name = None
         self.ktoolrc_file = None
-        self.cur_config = ConfigParser.ConfigParser()
+        self.cur_config = ConfigParser()
         self.dest_path = None
 
         self.__check_and_validate_parameters()
@@ -79,13 +90,13 @@ class KubectlTools:
         # Checking for config file ktoolrc & creating if not exist
         if len_arg >= 3 and sys.argv[3]:
             self.ktoolrc_file = sys.argv[3]
-            logger.warn("Using config file from %s", self.ktoolrc_file)
+            logger.warning("Using config file from %s", self.ktoolrc_file)
         else:
             self.ktoolrc_file = os.path.join(os.getcwd(), CONF_FILENAME)
             if os.path.isfile(self.ktoolrc_file):
-                logger.warn("Using config file from %s", self.ktoolrc_file)
+                logger.warning("Using config file from %s", self.ktoolrc_file)
             else:
-                logger.warn("No config file found! Using default configurations")
+                logger.warning("No config file found! Using default configurations")
                 self.__write_conf_to_file()
 
     def __read_and_validate_config_file(self):
@@ -94,16 +105,21 @@ class KubectlTools:
             self.cur_config.read(self.ktoolrc_file)
         else:
             logger.error("Give Config File [%s] doesn't exists!", self.ktoolrc_file)
-            exit(1)
+            sys.exit(1)
         # Checking for podname
         st_podname = self.cur_config.get('container', 'podname')
         namespace = self.cur_config.get('container', 'namespace')
         if st_podname:
+<<<<<<< HEAD
             logger.warn("Using podname = <%s> in namespace <%s>!\n\t--> If you want to change the podname,"
                         "change it at <%s> file <--", st_podname, namespace, self.ktoolrc_file)
+=======
+            logger.warning("Using podname = <%s>!\n\t--> If you want to change the podname, change it at <%s> file <--",
+                           st_podname, self.ktoolrc_file)
+>>>>>>> bb720cc (Upgrading to Python3 and Update README file)
         else:
             logger.error("Please set the value for 'podname' in the file %s", self.ktoolrc_file)
-            exit(1)
+            sys.exit(1)
 
     def __map_src_to_dest_path(self):
         if self.project_name == "texas_test_entrypoint":  # self.file_path.endswith(('.yaml', '.yml'))
@@ -120,14 +136,14 @@ class KubectlTools:
 
     # Helper Functions
     def __write_conf_to_file(self):
-        config_parser = ConfigParser.ConfigParser()
+        config_parser = ConfigParser()
         config_parser.optionxform = str
-        for sec, prop_dict in DEFAULT_CONF.iteritems():
+        for sec, prop_dict in DEFAULT_CONF.items():
             config_parser.add_section(sec)
-            for k, v in prop_dict.iteritems():
+            for k, v in prop_dict.items():
                 config_parser.set(sec, k, v)
         try:
-            with open(self.ktoolrc_file, 'wb') as configfile:
+            with open(self.ktoolrc_file, 'w+', encoding='utf-8') as configfile:
                 config_parser.write(configfile)
         except IOError as e:
             logger.error(e)
@@ -136,8 +152,8 @@ class KubectlTools:
 
     @staticmethod
     def __print_usage_and_exit():
-        print "%s %s <$FilePath$> <$ProjectName$> [ktoolrc_filepath] %s" % (YELLOW_COLOR_SEQ, sys.argv[0], RESET_SEQ)
-        exit(-1)
+        print(f"{YELLOW_COLOR_SEQ} {sys.argv[0]} <$FilePath$> <$ProjectName$> [ktoolrc_filepath] {RESET_SEQ}")
+        sys.exit(-1)
 
     @staticmethod
     def __run_command(command):
@@ -159,13 +175,13 @@ class KubectlTools:
                 dest_path = os.path.dirname(self.dest_path)
 
             cmd_template = Template(self.cur_config.get('command', 'kcp'))
-            kcp_commad = cmd_template.substitute(src_path=self.file_path, namespace=namespace,
-                                                 podname=st_podname, dest_path=dest_path)
+            kcp_command = cmd_template.substitute(src_path=self.file_path, namespace=namespace,
+                                                  podname=st_podname, dest_path=dest_path)
 
-            logger.info("[Running] cmd = %s", kcp_commad)
-            return self.__run_command(kcp_commad)
+            logger.info("[Running] cmd = %s", kcp_command)
+            return self.__run_command(kcp_command)
         else:
-            logger.warn("Please check if [%s] exists & is part of project [%s]", self.file_path, self.project_name)
+            logger.warning("Please check if [%s] exists & is part of project [%s]", self.file_path, self.project_name)
             return False
 
     def kubectl_run_test_on_container(self):
@@ -203,4 +219,4 @@ if __name__ == '__main__':
         kube_tool.kubectl_run_test_on_container()
     else:
         time.sleep(1)
-        logger.warn("Skipping KubeTool Run Test as Copy failed")
+        logger.warning("Skipping KubeTool Run Test as Copy failed")
