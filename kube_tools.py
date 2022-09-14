@@ -118,7 +118,7 @@ class KubectlTools:
             self.dest_path = self.cur_config.get(
                 section='mapping',
                 option='dst_package_dir' if self.project_name in ['beaver-qe', 'beaver-common'] else 'dst_test_dir'
-            ) + self.file_path.split(self.project_name)[1]
+            ) + self.file_path.split(self.project_name)[-1]
 
     # Helper Functions
     def __write_conf_to_file(self):
