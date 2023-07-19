@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/local/bin/python2.7
 import ConfigParser
 import os
 import sys
@@ -28,19 +28,19 @@ DEFAULT_CONF = {
         'namespace': os.getenv('USER')
     },
     'mapping': {
-        'dst_package_dir': '/usr/local/lib/python2.7/dist-packages',
+        'dst_package_dir': '/usr/local/lib/python3.6/dist-packages',
         'dst_test_dir': '/hwqe/hadoopqe',
         'dst_yaml_dir': '/ansible'
     },
     'command': {
-        'kcp': "kubectl cp $src_path ${namespace}/${podname}:${dest_path}",
-        'kexec': "kubectl exec -t $podname -n $namespace -c system-test -- $command",
+        'kcp': "/usr/local/bin/kubectl cp $src_path ${namespace}/${podname}:${dest_path}",
+        'kexec': "/usr/local/bin/kubectl exec -t $podname -n $namespace -c system-test -- $command",
         'sudo_login_and_run': "sudo su - hrt_qa -c \"$run_command\" ",
         'login_and_run': "su -c \"$run_command\" ",
         'texas_entry': "pkill supervisord && texas_test_entrypoint --test-type system_test --run-tests-path /ansible/system_test.yml",
         'ansible_play': "ansible-playbook $yaml_file",
         'cd_and_run': "source /etc/profile && cd $test_dir && $test_command",
-        'pytest': "python2.7 -m pytest -s $test_file_path --output=artifacts_${test_name} 2>&1 | tee /tmp/console_${test_name}.log"
+        'pytest': "python2.7 -m pytest -s $test_file_path --output=${test_name} --junitxml=${test_name}_junit.xml 2>&1 | tee /tmp/console_${test_name}.log"
     }
 }
 
