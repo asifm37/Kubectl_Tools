@@ -38,7 +38,7 @@ DEFAULT_CONF = {
         'sudo_login_and_run': "sudo su - hrt_qa -c \"$run_command\" ",
         'login_and_run': "su -c \"$run_command\" ",
         'texas_entry': "pkill supervisord && texas_test_entrypoint --test-type system_test --run-tests-path /ansible/system_test.yml",
-        'ansible_play': "ansible-playbook $yaml_file",
+        'ansible_play': "ansible-playbook $yaml_file -vvvv",
         'cd_and_run': "source /etc/profile && cd $test_dir && $test_command",
         'pytest': "python2.7 -m pytest -s $test_file_path --output=${test_name} --junitxml=${test_name}_junit.xml 2>&1 | tee /tmp/console_${test_name}.log"
     }
@@ -105,9 +105,12 @@ class KubectlTools:
             exit(1)
 
     def __map_src_to_dest_path(self):
-        if self.file_path.endswith(('.yaml', '.yml')):
+        if self.project_name == "texas_test_entrypoint":  # self.file_path.endswith(('.yaml', '.yml'))
+            from pathlib import Path
+            target_path = self.file_path[self.file_path.index(self.project_name) + len(self.project_name + "/files"):]
+            logger.info(self.file_path)
             self.dest_path = os.path.join(self.cur_config.get(section='mapping', option='dst_yaml_dir'),
-                                          os.path.basename(self.file_path))
+                                          target_path)
         else:
             self.dest_path = self.cur_config.get(
                 section='mapping',
