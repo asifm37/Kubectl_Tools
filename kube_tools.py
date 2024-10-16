@@ -97,9 +97,10 @@ class KubectlTools:
             exit(1)
         # Checking for podname
         st_podname = self.cur_config.get('container', 'podname')
+        namespace = self.cur_config.get('container', 'namespace')
         if st_podname:
-            logger.warn("Using podname = <%s>!\n\t--> If you want to change the podname, change it at <%s> file <--",
-                        st_podname, self.ktoolrc_file)
+            logger.warn("Using podname = <%s> in namespace <%s>!\n\t--> If you want to change the podname,"
+                        "change it at <%s> file <--", st_podname, namespace, self.ktoolrc_file)
         else:
             logger.error("Please set the value for 'podname' in the file %s", self.ktoolrc_file)
             exit(1)
