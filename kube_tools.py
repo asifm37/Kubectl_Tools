@@ -39,19 +39,12 @@ DEFAULT_CONF = {
         'kexec': "/usr/local/bin/kubectl exec -t $podname -n $namespace -c system-test -- $command",
         'sudo_login_and_run': "sudo su - hrt_qa -c \"$run_command\" ",
         'login_and_run': "su -c \"$run_command\" ",
-<<<<<<< HEAD
-        'texas_entry': "pkill supervisord && texas_test_entrypoint --test-type system_test --run-tests-path /ansible/system_test.yml",
-        'ansible_play': "ansible-playbook $yaml_file -vvvv",
-        'cd_and_run': "source /etc/profile && cd $test_dir && $test_command",
-        'pytest': "python2.7 -m pytest -s $test_file_path --output=${test_name} --junitxml=${test_name}_junit.xml 2>&1 | tee /tmp/console_${test_name}.log"
-=======
         'texas_entry': "pkill supervisord && texas_test_entrypoint --test-type system_test"
                        " --run-tests-path /ansible/system_test.yml",
         'ansible_play': "ansible-playbook $yaml_file",
         'cd_and_run': "source /etc/profile && cd $test_dir && $test_command",
         'pytest': "python3 -m pytest -s $test_file_path --output=artifacts_${test_name} 2>&1"
                   " | tee /tmp/console_${test_name}.log"
->>>>>>> bb720cc (Upgrading to Python3 and Update README file)
     }
 }
 
@@ -110,13 +103,8 @@ class KubectlTools:
         st_podname = self.cur_config.get('container', 'podname')
         namespace = self.cur_config.get('container', 'namespace')
         if st_podname:
-<<<<<<< HEAD
-            logger.warn("Using podname = <%s> in namespace <%s>!\n\t--> If you want to change the podname,"
-                        "change it at <%s> file <--", st_podname, namespace, self.ktoolrc_file)
-=======
             logger.warning("Using podname = <%s>!\n\t--> If you want to change the podname, change it at <%s> file <--",
                            st_podname, self.ktoolrc_file)
->>>>>>> bb720cc (Upgrading to Python3 and Update README file)
         else:
             logger.error("Please set the value for 'podname' in the file %s", self.ktoolrc_file)
             sys.exit(1)
