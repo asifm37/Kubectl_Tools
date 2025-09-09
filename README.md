@@ -62,10 +62,19 @@ To make this solution easy to use, just like in PyCharm, you can create a custom
 1. Open the Command Palette again with `Cmd + Shift + P` or `Ctrl + Shift + P`.
 2. Search for and select **"Preferences: Open Keyboard Shortcuts (JSON)"**.
 3. Add the following JSON object to the array in the `keybindings.json` file.
+```json
+[
+  {
+    "key": "cmd+shift+k",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Kubectl Copy & Run"
+  }
+]
 
+```
 Or you can **copy-paste** the json content from [**keybindings.json**](vscode_support/keybindings.json) file.
 
-## AI Agent (Coming Soon)
+## AI Agent (Coming Soon) 👷🏻‍♂️
 AI Agent to run your tests on test container directly from cursor IDE.
 
 ## How to set up Kubectl Tools in PyCharm IDE
