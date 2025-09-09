@@ -1,0 +1,50 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Kubectl Copy & Run",
+        "type": "process",
+        "command": "/Users/amohiuddeen/Github/Kubectl_Tools/kube_tools.py",
+        "args": [
+          "${file}",
+          "${workspaceFolderBasename}"
+        ],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Kubectl Copy Only",
+        "type": "process",
+        "command": "/Users/amohiuddeen/Github/Kubectl_Tools/kube_tools_copy.py",
+        "args": [
+          "${file}",
+          "${workspaceFolderBasename}"
+        ],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Kubectl Run Only",
+        "type": "process",
+        "command": "/Users/amohiuddeen/Github/Kubectl_Tools/kube_tools_run_test.py",
+        "args": [
+          "${file}",
+          "${workspaceFolderBasename}"
+        ],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        },
+        "problemMatcher": []
+      }
+    ]
+  }
